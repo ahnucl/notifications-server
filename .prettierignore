@@ -1,0 +1,5 @@
+node_modules
+dist
+README.md
+package*.json
+pnpm-lock.yaml
