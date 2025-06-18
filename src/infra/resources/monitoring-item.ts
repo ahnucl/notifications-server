@@ -1,4 +1,4 @@
-import { Resource } from '../resource'
+import { Resource } from '@/domain/value-objects/resource'
 
 export const MonitoringItem: Resource = {
   name: 'tb_monitoracao_item',

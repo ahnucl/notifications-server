@@ -1,4 +1,4 @@
-import { MonitoringItem } from '../domain/value-objects/resources/monitoring-item'
+import { MonitoringItem } from './resources/monitoring-item'
 import { Context } from '../domain/value-objects/context'
 
 console.log('Building...')
