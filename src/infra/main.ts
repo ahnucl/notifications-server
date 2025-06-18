@@ -1,5 +1,5 @@
-import { MonitoringItem } from './value-objects/resources/monitoring-item'
-import { Context } from './value-objects/context'
+import { MonitoringItem } from '../value-objects/resources/monitoring-item'
+import { Context } from '../value-objects/context'
 
 console.log('Building...')
 

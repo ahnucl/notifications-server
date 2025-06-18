@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsup",
-    "dev": "tsx watch src/main",
+    "dev": "tsx watch src/infra/main",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "test": "vitest run",
