@@ -1,13 +1,4 @@
-// import { Resource } from '@/value-objects/resource'
-
 import { Resource } from './resource'
-
-/**
- * monitoracao.tb_monitoracao_item
- * cd_monitoracao_item
- * js_observacao
- * observacaoIndex
- */
 
 interface ContextProps {
   resource: Resource
@@ -16,8 +7,8 @@ interface ContextProps {
 export class Context {
   private resource: Resource
 
-  constructor(props: ContextProps) {
-    this.resource = props.resource
+  constructor({ resource }: ContextProps) {
+    this.resource = resource
   }
 
   public getResourceName() {
