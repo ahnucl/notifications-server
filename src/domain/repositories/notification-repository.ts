@@ -1,5 +1,5 @@
 import { Notification } from '../entities/notification'
-import { Resource } from '../../value-objects/resource'
+import { Resource } from '../value-objects/resource'
 
 export abstract class NotificationRepository {
   abstract findManyByUserId(idUser: string): Promise<Notification[]>

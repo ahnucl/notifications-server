@@ -1,6 +1,6 @@
 import { Optional } from '@/types/optional'
-import { EntityID } from '@/value-objects/entity-id'
-import { Context } from '../../value-objects/context'
+import { EntityID } from '@/domain/value-objects/entity-id'
+import { Context } from '../value-objects/context'
 
 interface NotificationProps {
   recipientId: string
