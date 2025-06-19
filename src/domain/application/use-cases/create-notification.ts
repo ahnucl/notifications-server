@@ -8,7 +8,7 @@ interface CreateNotificationUseCaseRequest {
   context: Context
 }
 
-type CreateNotificationUseCaseResponse = UseCaseResponse<Notification>
+type CreateNotificationUseCaseResponse = UseCaseResponse<Notification, Error> // TODO: melhorar esse erro
 
 export class CreateNotificationUseCase {
   constructor(private repository: NotificationRepository) {}

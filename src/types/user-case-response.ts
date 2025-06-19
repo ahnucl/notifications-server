@@ -1,3 +1,1 @@
-export type UseCaseResponse<T = undefined, E = undefined> =
-  | [t: T, null]
-  | [null, e: E]
+export type UseCaseResponse<T, E> = [t: T, null] | [null, e: E]
