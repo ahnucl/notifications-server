@@ -1,11 +1,9 @@
 import { Notification } from '@/domain/entities/notification'
-import { NotificationRepository } from '../repositories/notification-repository'
-import { Context } from '@/domain/value-objects/context'
 import { UseCaseResponse } from '@/types/user-case-response'
+import { NotificationRepository } from '../repositories/notification-repository'
 
 interface FetchUserNotificationsUseCaseRequest {
   recipientId: string
-  context: Context
 }
 
 // TODO: Verificar se um caso de uso para buscar todos os contadores resolve melhor
@@ -23,7 +21,6 @@ export class FetchUserNotificationsUseCase {
   constructor(private repository: NotificationRepository) {}
 
   async execute({
-    context,
     recipientId,
   }: FetchUserNotificationsUseCaseRequest): Promise<FetchUserNotificationsUseCaseResponse> {
     const notifications = await this.repository.findManyByUserId(recipientId)
