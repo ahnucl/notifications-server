@@ -12,9 +12,10 @@ export class CreateNotificationController {
 
   async handle() {
     const context = new Context({ resource: MonitoringItem })
+    const recipientId = '400400' // TODO: Get from request
 
     const [, createError] = await this.createNotification.execute({
-      recipientId: '400400',
+      recipientId,
       context,
     })
 
@@ -22,16 +23,13 @@ export class CreateNotificationController {
       return // or throw something
     }
 
-    const [notifications, fetchError] =
-      await this.fetchUserNotifications.execute({
-        recipientId: '400400',
-        context,
-      })
+    const [userNotifications, fetchError] =
+      await this.fetchUserNotifications.execute({ recipientId })
 
     if (fetchError) {
       return // or throw something
     }
 
-    return notifications
+    return userNotifications
   }
 }
