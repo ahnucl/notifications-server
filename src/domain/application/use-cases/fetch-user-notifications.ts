@@ -6,12 +6,6 @@ interface FetchUserNotificationsUseCaseRequest {
   recipientId: string
 }
 
-// TODO: Verificar se um caso de uso para buscar todos os contadores resolve melhor
-interface teste {
-  usersNotifications: number
-  context: {}
-}
-
 type FetchUserNotificationsUseCaseResponse = UseCaseResponse<
   Notification[],
   Error
