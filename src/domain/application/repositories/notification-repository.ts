@@ -3,7 +3,8 @@ import { Resource } from '@/domain/value-objects/resource'
 
 export abstract class NotificationRepository {
   abstract findManyByUserId(idUser: string): Promise<Notification[]>
-  abstract findManyByResource(
+  abstract getUsersUnreadAmount(idUser: string): Promise<number>
+  abstract findManyByUserAndResource(
     resource: Resource,
     idUser: string
   ): Promise<Notification[]>
