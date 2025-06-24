@@ -23,6 +23,6 @@
       "vitest/globals"
     ]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*"],
 
 }
