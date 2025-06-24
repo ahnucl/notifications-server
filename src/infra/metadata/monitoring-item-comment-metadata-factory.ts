@@ -6,7 +6,7 @@ import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 import { Metadata } from '@/domain/value-objects/metadata/notificataion-metadata'
 
 export class MonitoringItemCommentMetadataFactory extends MetadataFactory {
-  private type: MetadataType = 'monitoringItemComment'
+  readonly type: MetadataType = 'monitoringItemComment'
 
   produce({ primaryKeyValue, auxiliarFieldValue }: MetadataValues): Metadata {
     if (!auxiliarFieldValue)
