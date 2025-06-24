@@ -20,10 +20,7 @@ describe('Create notification', () => {
   })
 
   it('should be able to create a notification', async () => {
-    // expect created
-    // expect metadatas
-
-    const [newNotification, error] = await sut.execute({
+    const [newNotification] = await sut.execute({
       primaryKeyValue: 1,
       auxiliarFieldValue: 2,
       recipientId: '400400',
