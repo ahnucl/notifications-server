@@ -27,4 +27,8 @@ export class Notification {
   public read() {
     this.readAt = new Date()
   }
+
+  public getType() {
+    return this.metadata.type
+  }
 }
