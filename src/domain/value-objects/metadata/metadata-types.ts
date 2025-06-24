@@ -1,1 +1,1 @@
-export type MetadataType = 'monitoringItemComment'
+export type MetadataType = 'monitoringItemComment' | 'none'
