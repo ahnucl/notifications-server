@@ -1,5 +1,5 @@
 import { CreateNotificationUseCase } from '@/domain/application/use-cases/create-notification'
-import { FetchUserNotificationsUseCase } from '@/domain/application/use-cases/fetch-user-notifications'
+import { FetchUserNotificationsWithTypeUseCase } from '@/domain/application/use-cases/fetch-user-notifications-with-type'
 
 interface CreateMonitoringItemCommentNotificationPayload {
   recipientId: string
@@ -11,7 +11,7 @@ export class CreateMonitoringItemCommentNotificationController {
   constructor(
     readonly path = 'monitoringItemComment:create',
     private createNotification: CreateNotificationUseCase,
-    private fetchUserNotifications: FetchUserNotificationsUseCase
+    private fetchUserNotificationsWithType: FetchUserNotificationsWithTypeUseCase
   ) {}
 
   async handle({
@@ -30,7 +30,7 @@ export class CreateMonitoringItemCommentNotificationController {
     }
 
     const [userNotifications, fetchError] =
-      await this.fetchUserNotifications.execute({ recipientId })
+      await this.fetchUserNotificationsWithType.execute({ recipientId })
 
     if (fetchError) {
       return // or throw something

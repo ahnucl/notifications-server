@@ -3,11 +3,11 @@ import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factor
 import { UseCaseResponse } from '@/types/user-case-response'
 import { NotificationRepository } from '../repositories/notification-repository'
 
-interface FetchUserAndContextNotificationUseCaseRequest {
+interface FetchUserNotificationsWithTypeUseCaseRequest {
   recipientId: string
 }
 
-type FetchUserAndContextNotificationUseCaseResponse = UseCaseResponse<
+type FetchUserNotificationsWithTypeUseCaseResponse = UseCaseResponse<
   {
     unreadAmount: number
     unreadNotificationsOfType: Notification[]
@@ -15,7 +15,7 @@ type FetchUserAndContextNotificationUseCaseResponse = UseCaseResponse<
   Error
 > // TODO: melhorar esse erro
 
-export class FetchUserAndContextNotificationUseCase {
+export class FetchUserNotificationsWithTypeUseCase {
   constructor(
     private repository: NotificationRepository,
     private metadataFactory: MetadataFactory
@@ -23,7 +23,7 @@ export class FetchUserAndContextNotificationUseCase {
 
   async execute({
     recipientId,
-  }: FetchUserAndContextNotificationUseCaseRequest): Promise<FetchUserAndContextNotificationUseCaseResponse> {
+  }: FetchUserNotificationsWithTypeUseCaseRequest): Promise<FetchUserNotificationsWithTypeUseCaseResponse> {
     const metadataType = this.metadataFactory.type
     const unreadAmount = await this.repository.getUsersUnreadAmount(recipientId)
     const unreadNotificationsOfType =
