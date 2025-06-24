@@ -1,25 +1,36 @@
 import { Notification } from '@/domain/entities/notification'
-import { NotificationRepository } from '../repositories/notification-repository'
-import { Context } from '@/domain/value-objects/context'
+
+import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { UseCaseResponse } from '@/types/user-case-response'
+import { NotificationRepository } from '../repositories/notification-repository'
 
 interface CreateNotificationUseCaseRequest {
+  primaryKeyValue: string | number
+  auxiliarFieldValue?: string | number
   recipientId: string
-  context: Context
 }
 
 type CreateNotificationUseCaseResponse = UseCaseResponse<Notification, Error> // TODO: melhorar esse erro
 
 export class CreateNotificationUseCase {
-  constructor(private repository: NotificationRepository) {}
+  constructor(
+    private repository: NotificationRepository,
+    private metadataFactory: MetadataFactory
+  ) {}
 
   async execute({
-    context,
+    primaryKeyValue,
+    auxiliarFieldValue,
     recipientId,
   }: CreateNotificationUseCaseRequest): Promise<CreateNotificationUseCaseResponse> {
+    const metadata = this.metadataFactory.produce({
+      primaryKeyValue,
+      auxiliarFieldValue,
+    })
+
     const notification = new Notification({
-      context,
       recipientId,
+      metadata,
     })
 
     await this.repository.create(notification)
