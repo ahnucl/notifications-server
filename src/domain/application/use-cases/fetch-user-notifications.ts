@@ -1,5 +1,5 @@
 import { Notification } from '@/domain/entities/notification'
-import { UseCaseResponse } from '@/types/user-case-response'
+import { UseCaseResponse } from '@/types/use-case-response'
 import { NotificationRepository } from '../repositories/notification-repository'
 
 interface FetchUserNotificationsUseCaseRequest {
