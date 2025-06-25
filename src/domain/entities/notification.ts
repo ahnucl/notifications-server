@@ -12,19 +12,23 @@ export class Notification {
   private id: EntityID
   readonly recipientId: string
   private createdAt: Date
-  private readAt?: Date | null
+  private _readAt?: Date | null
   private metadata: Metadata
 
   constructor(props: NotificationProps, id?: EntityID) {
     this.id = id ?? new EntityID()
     this.recipientId = props.recipientId
     this.createdAt = props.createdAt || new Date()
-    this.readAt = props.readAt
+    this._readAt = props.readAt
     this.metadata = props.metadata
   }
 
+  get readAt() {
+    return this._readAt
+  }
+
   public read() {
-    this.readAt = new Date()
+    this._readAt = new Date()
   }
 
   public getType() {

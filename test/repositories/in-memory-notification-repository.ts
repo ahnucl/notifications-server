@@ -14,7 +14,7 @@ export class InMemoryNotificationRepository extends NotificationRepository {
   async getUsersUnreadAmount(idUser: string): Promise<number> {
     return this.notifications.filter(
       (notification) =>
-        notification.recipientId === idUser && !notification.read
+        notification.recipientId === idUser && !notification.readAt
     ).length
   }
 
@@ -24,7 +24,9 @@ export class InMemoryNotificationRepository extends NotificationRepository {
   ): Promise<Notification[]> {
     return this.notifications.filter(
       (notification) =>
-        notification.recipientId === idUser && notification.getType() === type
+        notification.recipientId === idUser &&
+        notification.getType() === type &&
+        !notification.readAt
     )
   }
 
