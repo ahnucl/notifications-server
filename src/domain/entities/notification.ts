@@ -1,10 +1,9 @@
-import { Optional } from '@/types/optional'
 import { EntityID } from '../value-objects/entity-id'
 import { Metadata } from '../value-objects/metadata/notificataion-metadata'
 
-interface NotificationProps {
+export interface NotificationProps {
   recipientId: string
-  createdAt: Date
+  createdAt?: Date
   readAt?: Date | null
   metadata: Metadata
 }
@@ -16,7 +15,7 @@ export class Notification {
   private readAt?: Date | null
   private metadata: Metadata
 
-  constructor(props: Optional<NotificationProps, 'createdAt'>, id?: EntityID) {
+  constructor(props: NotificationProps, id?: EntityID) {
     this.id = id ?? new EntityID()
     this.recipientId = props.recipientId
     this.createdAt = props.createdAt || new Date()
