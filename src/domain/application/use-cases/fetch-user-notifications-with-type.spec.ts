@@ -49,6 +49,7 @@ describe("Fetch user's notification by metadata type", () => {
 
     expect(unreadAmount).toBe(2)
     expect(unreadNotificationsOfType).toHaveLength(1)
+    expect(unreadNotificationsOfType[0].recipientId).toBe('400400')
     expect(unreadNotificationsOfType[0].getType()).toEqual(metadataFactory.type)
   })
 })
