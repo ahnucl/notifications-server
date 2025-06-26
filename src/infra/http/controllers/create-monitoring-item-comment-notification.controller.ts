@@ -36,8 +36,6 @@ export class CreateMonitoringItemCommentNotificationController {
       return // or throw something
     }
 
-    // const [] = await this.
-
     return userNotifications
   }
 }
