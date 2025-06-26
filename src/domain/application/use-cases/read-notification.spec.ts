@@ -42,5 +42,45 @@ describe('Read notification', () => {
     expect(readNotification.readAt).toBeTruthy()
   })
 
-  it('should return an error if notification was not found', async () => {})
+  it('should return an error if notification was not found', async () => {
+    const [response, error] = await sut.execute({
+      notificationId: 'some-id',
+      recipientId: '400400',
+    })
+
+    expect(response).toBeNull()
+    expect(error).not.toBeNull()
+    expect(error).toBeInstanceOf(Error)
+    expect(error?.message).toEqual('Not found')
+  })
+
+  it('should not be able to read another user notification ', async () => {
+    const notification = makeNotification({
+      recipientId: '400400',
+      metadata: {
+        type: 'none',
+        name: '',
+        primaryKey: {
+          name: '',
+          value: 1,
+        },
+        auxiliarField: {
+          name: '',
+          value: 2,
+        },
+      },
+    })
+    inMemoryNotificationRepository.create(notification)
+
+    const [response, error] = await sut.execute({
+      notificationId: notification.id.value,
+      recipientId: '500500',
+    })
+
+    expect(response).toBeNull()
+    expect(error).not.toBeNull()
+    expect(error).toBeInstanceOf(Error)
+    expect(error?.message).toEqual('Not allowed')
+    expect(inMemoryNotificationRepository.notifications).toHaveLength(1)
+  })
 })

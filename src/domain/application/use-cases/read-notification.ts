@@ -19,7 +19,7 @@ export class ReadNotificationUseCase {
     const notification = await this.repository.findById(notificationId)
 
     if (!notification) {
-      return [null, new Error('Resouce not found')]
+      return [null, new Error('Not found')]
     }
 
     if (notification.recipientId !== recipientId) {
