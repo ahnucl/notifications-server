@@ -11,14 +11,14 @@ export interface NotificationProps {
 export class Notification {
   private _id: EntityID
   readonly recipientId: string
-  private createdAt: Date
+  private _createdAt: Date
   private _readAt?: Date | null
   private metadata: Metadata
 
   constructor(props: NotificationProps, id?: EntityID) {
     this._id = id ?? new EntityID()
     this.recipientId = props.recipientId
-    this.createdAt = props.createdAt || new Date()
+    this._createdAt = props.createdAt || new Date()
     this._readAt = props.readAt
     this.metadata = props.metadata
   }
@@ -29,6 +29,10 @@ export class Notification {
 
   get readAt() {
     return this._readAt
+  }
+
+  get createdAt() {
+    return this._createdAt
   }
 
   get primaryId() {

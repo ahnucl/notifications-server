@@ -1,9 +1,7 @@
-import {
-  NotificationRepository,
-  SearchMetadata,
-} from '@/domain/application/repositories/notification-repository'
+import { NotificationRepository } from '@/domain/application/repositories/notification-repository'
 import { Notification } from '@/domain/entities/notification'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
+import { Metadata } from '@/domain/value-objects/metadata/notificataion-metadata'
 
 export class InMemoryNotificationRepository extends NotificationRepository {
   public notifications: Notification[] = []
@@ -33,21 +31,38 @@ export class InMemoryNotificationRepository extends NotificationRepository {
     )
   }
 
-  async findByUserAndMetadata(
-    idUser: string,
-    { type, primaryKeyValue, auxiliarFieldValue }: SearchMetadata
-  ): Promise<Notification | null> {
+  async findById(id: string): Promise<Notification | null> {
     const notification = this.notifications.find(
-      (notification) =>
-        notification.recipientId === idUser &&
-        notification.getType() === type &&
-        notification.primaryId === primaryKeyValue &&
-        notification.auxiliarId === auxiliarFieldValue
+      (notification) => notification.id.value === id
     )
 
     if (!notification) return null
 
-    return this.cloneInstance(notification) // Needed because altering the refence bypass the persistence (its the same object)
+    const metadata: Metadata = {
+      type: 'none',
+      name: '',
+      primaryKey: {
+        name: '',
+        value: notification.primaryId,
+      },
+    }
+
+    if (notification.auxiliarId) {
+      metadata.auxiliarField = {
+        name: '',
+        value: notification.auxiliarId,
+      }
+    }
+
+    return new Notification(
+      {
+        metadata,
+        recipientId: notification.recipientId,
+        readAt: notification.readAt,
+        createdAt: notification.createdAt,
+      },
+      notification.id
+    )
   }
 
   async create(notification: Notification): Promise<void> {

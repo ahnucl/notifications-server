@@ -1,13 +1,10 @@
 import { Notification } from '@/domain/entities/notification'
 import { UseCaseResponse } from '@/types/use-case-response'
 import { NotificationRepository } from '../repositories/notification-repository'
-import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 
 interface ReadNotificationUseCaseRequest {
-  primaryKeyValue: string | number
-  auxiliarFieldValue?: string | number
   recipientId: string
-  type: MetadataType
+  notificationId: string
 }
 
 type ReadNotificationUseCaseResponse = UseCaseResponse<Notification, Error>
@@ -16,22 +13,17 @@ export class ReadNotificationUseCase {
   constructor(private repository: NotificationRepository) {}
 
   async execute({
-    primaryKeyValue,
-    auxiliarFieldValue,
     recipientId,
-    type,
+    notificationId,
   }: ReadNotificationUseCaseRequest): Promise<ReadNotificationUseCaseResponse> {
-    const notification = await this.repository.findByUserAndMetadata(
-      recipientId,
-      {
-        primaryKeyValue,
-        auxiliarFieldValue,
-        type,
-      }
-    )
+    const notification = await this.repository.findById(notificationId)
 
     if (!notification) {
       return [null, new Error('Resouce not found')]
+    }
+
+    if (notification.recipientId !== recipientId) {
+      return [null, new Error('Not allowed')]
     }
 
     notification.read()
