@@ -26,3 +26,12 @@ commentIndex -> identificação do comentário
 
 1. Buscar todas as notificações não lidas do agente -> `cd_agente:*`
 2. Bucas notificações não lidas de um contexto para um agente -> `context:cd_context:cd_agente:*
+
+
+# Eventos
+
+connection -> setupControllers()
+notifications -> users notifications amount
+resource -> users resource notifications
+
+create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
