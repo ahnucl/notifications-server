@@ -2,20 +2,21 @@ import { Notification } from '@/domain/entities/notification'
 import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { UseCaseResponse } from '@/types/use-case-response'
 import { NotificationRepository } from '../repositories/notification-repository'
+import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 
-interface FetchUserNotificationsWithTypeUseCaseRequest {
+interface FetchUserNotificationsByTypeUseCaseRequest {
   recipientId: string
 }
 
-type FetchUserNotificationsWithTypeUseCaseResponse = UseCaseResponse<
+type FetchUserNotificationsByTypeUseCaseResponse = UseCaseResponse<
   {
-    unreadAmount: number
-    unreadNotificationsOfType: Notification[]
+    unreadNotifications: Notification[]
+    type: MetadataType
   },
   Error
 > // TODO: melhorar esse erro
 
-export class FetchUserNotificationsWithTypeUseCase {
+export class FetchUserNotificationsByTypeUseCase {
   constructor(
     private repository: NotificationRepository,
     private metadataFactory: MetadataFactory
@@ -23,15 +24,14 @@ export class FetchUserNotificationsWithTypeUseCase {
 
   async execute({
     recipientId,
-  }: FetchUserNotificationsWithTypeUseCaseRequest): Promise<FetchUserNotificationsWithTypeUseCaseResponse> {
+  }: FetchUserNotificationsByTypeUseCaseRequest): Promise<FetchUserNotificationsByTypeUseCaseResponse> {
     const metadataType = this.metadataFactory.type
-    const unreadAmount = await this.repository.getUsersUnreadAmount(recipientId)
-    const unreadNotificationsOfType =
-      await this.repository.findManyUnreadByUserAndType(
+    const unreadNotifications =
+      await this.repository.getUsersUnreadAmountByType(
         recipientId,
         metadataType
       )
 
-    return [{ unreadAmount, unreadNotificationsOfType }, null]
+    return [{ unreadNotifications, type: metadataType }, null]
   }
 }

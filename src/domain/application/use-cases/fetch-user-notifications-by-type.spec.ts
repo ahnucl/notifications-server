@@ -1,19 +1,19 @@
 import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { TestMetadataFactory } from 'test/metadata/testing-metadata-factory'
 import { InMemoryNotificationRepository } from 'test/repositories/in-memory-notification-repository'
-import { FetchUserNotificationsWithTypeUseCase } from './fetch-user-notifications-with-type'
+import { FetchUserNotificationsByTypeUseCase } from './fetch-user-notifications-by-type'
 import { makeNotification } from 'test/factories/make-notification'
 
 let inMemoryNotificationRepository: InMemoryNotificationRepository
 let metadataFactory: MetadataFactory
-let sut: FetchUserNotificationsWithTypeUseCase
+let sut: FetchUserNotificationsByTypeUseCase
 
 describe("Fetch user's notification by metadata type", () => {
   beforeEach(() => {
     inMemoryNotificationRepository = new InMemoryNotificationRepository()
     metadataFactory = new TestMetadataFactory()
 
-    sut = new FetchUserNotificationsWithTypeUseCase(
+    sut = new FetchUserNotificationsByTypeUseCase(
       inMemoryNotificationRepository,
       metadataFactory
     )
@@ -45,11 +45,12 @@ describe("Fetch user's notification by metadata type", () => {
       recipientId: '400400',
     })
 
-    const { unreadAmount, unreadNotificationsOfType } = usersNotification!
+    const { unreadNotifications, type } = usersNotification!
 
-    expect(unreadAmount).toBe(2)
-    expect(unreadNotificationsOfType).toHaveLength(1)
-    expect(unreadNotificationsOfType[0].recipientId).toBe('400400')
-    expect(unreadNotificationsOfType[0].getType()).toEqual(metadataFactory.type)
+    expect(type).toBe('none')
+    expect(unreadNotifications).toHaveLength(1)
+    expect(unreadNotifications[0].getType()).toEqual('none')
+    expect(unreadNotifications[0].recipientId).toBe('400400')
+    expect(inMemoryNotificationRepository.notifications).toHaveLength(2)
   })
 })
