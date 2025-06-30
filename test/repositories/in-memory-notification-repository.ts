@@ -19,7 +19,7 @@ export class InMemoryNotificationRepository extends NotificationRepository {
     ).length
   }
 
-  async findManyUnreadByUserAndType(
+  async getUsersUnreadAmountByType(
     idUser: string,
     type: MetadataType
   ): Promise<Notification[]> {
@@ -77,9 +77,5 @@ export class InMemoryNotificationRepository extends NotificationRepository {
     if (index >= 0) {
       this.notifications[index] = notification
     }
-  }
-
-  private cloneInstance(obj: Notification): Notification {
-    return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj)
   }
 }
