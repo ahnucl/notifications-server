@@ -4,11 +4,11 @@ import { UseCaseResponse } from '@/types/use-case-response'
 import { NotificationRepository } from '../repositories/notification-repository'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 
-interface FetchUserNotificationsByTypeUseCaseRequest {
+interface FetchUserUnreadNotificationsByTypeUseCaseRequest {
   recipientId: string
 }
 
-type FetchUserNotificationsByTypeUseCaseResponse = UseCaseResponse<
+type FetchUserUnreadNotificationsByTypeUseCaseResponse = UseCaseResponse<
   {
     unreadNotifications: Notification[]
     type: MetadataType
@@ -16,7 +16,7 @@ type FetchUserNotificationsByTypeUseCaseResponse = UseCaseResponse<
   Error
 > // TODO: melhorar esse erro
 
-export class FetchUserNotificationsByTypeUseCase {
+export class FetchUserUnreadNotificationsByTypeUseCase {
   constructor(
     private repository: NotificationRepository,
     private metadataFactory: MetadataFactory
@@ -24,13 +24,12 @@ export class FetchUserNotificationsByTypeUseCase {
 
   async execute({
     recipientId,
-  }: FetchUserNotificationsByTypeUseCaseRequest): Promise<FetchUserNotificationsByTypeUseCaseResponse> {
+  }: FetchUserUnreadNotificationsByTypeUseCaseRequest): Promise<FetchUserUnreadNotificationsByTypeUseCaseResponse> {
     const metadataType = this.metadataFactory.type
-    const unreadNotifications =
-      await this.repository.getUsersUnreadAmountByType(
-        recipientId,
-        metadataType
-      )
+    const unreadNotifications = await this.repository.findManyUnreadByType(
+      recipientId,
+      metadataType
+    )
 
     return [{ unreadNotifications, type: metadataType }, null]
   }

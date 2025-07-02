@@ -1,25 +1,25 @@
 import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { TestMetadataFactory } from 'test/metadata/testing-metadata-factory'
 import { InMemoryNotificationRepository } from 'test/repositories/in-memory-notification-repository'
-import { FetchUserNotificationsByTypeUseCase } from './fetch-user-notifications-by-type'
+import { FetchUserUnreadNotificationsByTypeUseCase } from './fetch-user-unread-notifications-by-type'
 import { makeNotification } from 'test/factories/make-notification'
 
 let inMemoryNotificationRepository: InMemoryNotificationRepository
 let metadataFactory: MetadataFactory
-let sut: FetchUserNotificationsByTypeUseCase
+let sut: FetchUserUnreadNotificationsByTypeUseCase
 
 describe("Fetch user's notification by metadata type", () => {
   beforeEach(() => {
     inMemoryNotificationRepository = new InMemoryNotificationRepository()
     metadataFactory = new TestMetadataFactory()
 
-    sut = new FetchUserNotificationsByTypeUseCase(
+    sut = new FetchUserUnreadNotificationsByTypeUseCase(
       inMemoryNotificationRepository,
       metadataFactory
     )
   })
 
-  it("should returns user's total unred notifications", async () => {
+  it("should returns user's total unread notifications", async () => {
     inMemoryNotificationRepository.create(
       makeNotification({
         metadata: {
@@ -28,6 +28,17 @@ describe("Fetch user's notification by metadata type", () => {
           primaryKey: { name: '', value: '' },
         },
         recipientId: '400400',
+      })
+    )
+    inMemoryNotificationRepository.create(
+      makeNotification({
+        metadata: {
+          type: 'none',
+          name: '',
+          primaryKey: { name: '', value: '' },
+        },
+        recipientId: '400400',
+        readAt: new Date(),
       })
     )
     inMemoryNotificationRepository.create(
@@ -51,6 +62,6 @@ describe("Fetch user's notification by metadata type", () => {
     expect(unreadNotifications).toHaveLength(1)
     expect(unreadNotifications[0].getType()).toEqual('none')
     expect(unreadNotifications[0].recipientId).toBe('400400')
-    expect(inMemoryNotificationRepository.notifications).toHaveLength(2)
+    expect(inMemoryNotificationRepository.notifications).toHaveLength(3)
   })
 })
