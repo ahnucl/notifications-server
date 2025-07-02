@@ -4,7 +4,7 @@ import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 export abstract class NotificationRepository {
   abstract findManyByUserId(idUser: string): Promise<Notification[]>
   abstract getUsersUnreadAmount(idUser: string): Promise<number>
-  abstract getUsersUnreadAmountByType(
+  abstract findManyUnreadByType(
     idUser: string,
     type: MetadataType
   ): Promise<Notification[]>

@@ -19,7 +19,7 @@ export class InMemoryNotificationRepository extends NotificationRepository {
     ).length
   }
 
-  async getUsersUnreadAmountByType(
+  async findManyUnreadByType(
     idUser: string,
     type: MetadataType
   ): Promise<Notification[]> {
