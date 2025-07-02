@@ -35,3 +35,20 @@ notifications -> users notifications amount
 resource -> users resource notifications
 
 create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
+
+## Cliente
+
+1. conecta
+2. cria listeners:
+   2.1 atualizar contador global
+   2.2 atualizar outros contadores
+3. emite join com o cd_agente
+
+## Servidor
+
+1. Na conexão:
+  1.1 Cria listeners:
+    1.1.1 join
+    1.1.1 controllers
+  1.2 Middlewares
+  1.3 Erros
