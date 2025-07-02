@@ -9,7 +9,7 @@ export class MonitoringItemCommentMetadataFactory extends MetadataFactory {
   readonly type: MetadataType = 'monitoringItemComment'
 
   produce({ primaryKeyValue, auxiliarFieldValue }: MetadataValues): Metadata {
-    if (!auxiliarFieldValue)
+    if (auxiliarFieldValue !== 0 && !auxiliarFieldValue)
       throw new Error('Auxiliar value is required for monitoringItemComment')
 
     return {
