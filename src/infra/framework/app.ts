@@ -1,20 +1,12 @@
 import http from 'node:http'
 import { Server } from 'socket.io'
+import {
+  AppEvent,
+  SocketEmitter,
+} from '../http/controllers/create-monitoring-item-comment-notification.controller'
+import { setupControllers } from '../http/controllers/setup'
 
-// interface App {
-//   httpServer: http.Server
-//   socketServer: Server
-// }
-
-type Controller = object
-
-class AppServer {
-  constructor(
-    private server: http.Server,
-    private controllers: Controller[]
-  ) {}
-}
-
+// Server setup
 const httpServer = http.createServer((req, res) => {
   if (req.url === '/health') {
     res.writeHead(200)
@@ -30,25 +22,60 @@ const socketServer = new Server(httpServer, {
   transports: ['websocket', 'polling'],
 })
 
+class SocketIOServer implements SocketEmitter {
+  private server = socketServer
+
+  toUser(userId: string, { name, payload }: AppEvent<unknown>): void {
+    console.log(
+      `[Socket.IO] Emitting event: ${name} : ${payload} : to ${userId}`
+    )
+    this.server.to(userId).emit(name, payload)
+  }
+}
+
+const emitter = new SocketIOServer()
+//
+
+// Controllers
+const controllers = setupControllers(emitter)
+//
+
+// Socket setup
 socketServer.on('connection', (socket) => {
-  console.log('User connected', socket.id)
+  console.log('[Socket.IO] User connected', socket.id)
+
+  socket.on('disconnect', (e) => {
+    console.log('[Socket.IO] User disconnected', socket.id, `| Reason: ${e}`)
+  })
+
   socket.use(([event], next) => {
-    console.log(`[Socket.IO] Event: ${event}`)
+    console.log(`[Socket.IO] Event: ${event} : ${socket.id}`)
     next()
   })
-})
 
-socketServer.engine.on('connection_error', (err) => {
-  console.log(err.req) // the request object
-  console.log(err.code) // the error code, for example 1
-  console.log(err.message) // the error message, for example "Session ID unknown"
-  console.log(err.context) // some additional error context
+  // socket.on('chat_message', (msg: string) => {
+  //   console.log('data', msg)
+  //   socket.emit('msg_received', `Mensagem recebida! ${socket.id}`)
+  // })
+
+  socket.on('join', (userId: string) => {
+    socket.join(userId)
+  })
+
+  // socket.on('join_test', (userId: string) => {
+  //   socketServer
+  //     .to(userId)
+  //     .emit('join_test_response', `Received from ${userId}`)
+  // })
+
+  controllers.forEach((c) =>
+    socket.on(c.path, async (payload) => {
+      console.log('[Socket.IO]', c.path, payload)
+      await c.handle(JSON.parse(payload))
+    })
+  )
 })
 
 httpServer.listen(3333, () => {
   console.log('[HTTP] Server is running')
 })
-
-setInterval(() => {
-  socketServer.emit('server_time', { time: Date.now() })
-}, 10000)
