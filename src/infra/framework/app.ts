@@ -1,21 +1,12 @@
-import http from 'node:http'
 import { Server } from 'socket.io'
 import {
   AppEvent,
   SocketEmitter,
-} from '../http/controllers/create-monitoring-item-comment-notification.controller'
-import { setupControllers } from '../http/controllers/setup'
+} from '../socket/controllers/create-monitoring-item-comment-notification.controller'
+import { setupControllers } from '../socket/controllers/setup'
+import { httpServer } from '../http/server'
 
 // Server setup
-const httpServer = http.createServer((req, res) => {
-  if (req.url === '/health') {
-    res.writeHead(200)
-    res.end('OK')
-  } else {
-    res.writeHead(404)
-    res.end()
-  }
-})
 
 const socketServer = new Server(httpServer, {
   cors: { origin: '*' },
