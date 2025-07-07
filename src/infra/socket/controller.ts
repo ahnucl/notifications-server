@@ -1,8 +1,4 @@
-/**
- * THIS IS A SKETCH
- */
-
-import { SocketEmitter } from './create-monitoring-item-comment-notification.controller'
+import { SocketEmitter } from './emitter'
 
 interface BaseControllerProps {
   path: string
