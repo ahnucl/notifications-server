@@ -1,20 +1,10 @@
 import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
-import { Controller } from './controller'
+import { Controller } from '../controller'
+import { SocketEmitter } from '../emitter'
 
 interface RetrieveMonitoringItemCommentNotificationsPayload {
   recipientId: string
 }
-
-export interface SocketEmitter<T = unknown> {
-  toUser(userId: string, event: AppEvent<T>): void
-}
-
-export interface AppEvent<T = unknown> {
-  name: DispatchEvent
-  payload: T
-}
-
-type DispatchEvent = 'global:amount' | 'monitoringItemComment:notifications'
 
 export class RetrieveMonitoringItemCommentNotificationsController extends Controller {
   constructor(

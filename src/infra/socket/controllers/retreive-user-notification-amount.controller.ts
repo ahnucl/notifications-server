@@ -1,6 +1,6 @@
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
-import { Controller } from './controller'
-import { SocketEmitter } from './create-monitoring-item-comment-notification.controller'
+import { Controller } from '../controller'
+import { SocketEmitter } from '../emitter'
 
 interface RetrieveUserNotificationAmountPayload {
   recipientId: string
