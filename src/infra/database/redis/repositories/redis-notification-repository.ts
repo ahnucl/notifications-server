@@ -2,10 +2,12 @@
 import { NotificationRepository } from '@/domain/application/repositories/notification-repository'
 import { Notification } from '@/domain/entities/notification'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
-import { RedisClientType } from 'redis'
+import { AppRedisClient } from '../redis.service'
 
 export class RedisNotificationRepository implements NotificationRepository {
-  constructor(private client: RedisClientType) {}
+  constructor(private client: AppRedisClient) {
+    this.client.connect()
+  }
 
   findManyByUserId(idUser: string): Promise<Notification[]> {
     throw new Error('Method not implemented.')
