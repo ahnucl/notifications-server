@@ -36,10 +36,10 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
         socket.join(userId)
       })
 
-      controllers.forEach((c) =>
-        socket.on(c.path, async (payload) => {
-          console.log('[Socket.IO] Controller', c.path, payload)
-          await c.handle(JSON.parse(payload))
+      controllers.forEach((controller) =>
+        socket.on(controller.path, async (payload) => {
+          console.log('[Socket.IO] Controller', controller.path, payload)
+          await controller.handle(JSON.parse(payload))
         })
       )
     })
