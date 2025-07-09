@@ -1,10 +1,9 @@
 import { httpServer } from '@/infra/http/server'
 import { AddressInfo } from 'node:net'
-import { io as Client, Socket } from 'socket.io-client'
+import { io as Client } from 'socket.io-client'
 import { SocketIOServer } from './socket-io-server'
 
 describe('Join SocketIO Room (E2E)', () => {
-  let clientSocket: Socket
   let socketServerURL: string
   let socketServer: SocketIOServer
 
@@ -22,18 +21,21 @@ describe('Join SocketIO Room (E2E)', () => {
   })
 
   it('should be able to join a room', async () => {
-    clientSocket = Client(socketServerURL)
+    const clientSocket = Client(socketServerURL)
     clientSocket.emit('join', '400400')
     await vi.waitFor(() => {
-      if (!clientSocket.connected) {
-        throw new Error('[TEST] Client not connected yet')
-      }
-
-      console.log('[TEST] Client connected')
+      expect(clientSocket.connected).toBeTruthy()
     })
 
-    const waitForResponse = new Promise<string>((resolve) => {
-      clientSocket.on('join-test', resolve)
+    const waitForResponse = new Promise<string>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('[TEST] Test timeout: No join-test event received'))
+      }, 100)
+
+      clientSocket.once('join-test', (payload) => {
+        clearTimeout(timeout)
+        resolve(payload)
+      })
     })
 
     socketServer.toUser('400400', {
@@ -45,31 +47,45 @@ describe('Join SocketIO Room (E2E)', () => {
 
     expect(payload).toBeTruthy()
     expect(payload).toEqual('server-sent-to-room')
+
+    clientSocket.off()
+    clientSocket.disconnect()
   })
 
-  it('should not be able to receive message to other room', async () => {
-    clientSocket = Client(socketServerURL)
-    clientSocket.emit('join', '400400')
-    await vi.waitFor(() => {
-      if (!clientSocket.connected) {
-        throw new Error('[TEST] Client not connected yet')
-      }
+  it('should not receive messages sent to other rooms', async () => {
+    const clientSocket1 = Client(socketServerURL)
+    clientSocket1.emit('join', '400400')
+    const clientSocket2 = Client(socketServerURL)
+    clientSocket2.emit('join', '500500')
 
-      console.log('[TEST] Client connected')
-    })
+    await Promise.all([
+      vi.waitFor(() => {
+        expect(clientSocket1.connected).toBeTruthy()
+      }),
+      vi.waitFor(() => {
+        expect(clientSocket2.connected).toBeTruthy()
+      }),
+    ])
 
-    const waitForResponse = new Promise<string>((resolve, reject) => {
-      clientSocket.on('join-test', reject)
-    })
+    const forbiddenEventHandler = vi.fn()
+    clientSocket1.once('join-test', forbiddenEventHandler)
+
+    const allowedEventHandler = vi.fn()
+    clientSocket2.once('join-test', allowedEventHandler)
 
     socketServer.toUser('500500', {
       name: 'join-test',
       payload: 'server-sent-to-other-room',
     })
 
-    const payload = await waitForResponse
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(payload).toBeFalsy()
-    // expect(payload).toEqual('server-sent-to-room')
+    expect(forbiddenEventHandler).not.toHaveBeenCalled()
+    expect(allowedEventHandler).toHaveBeenCalled()
+
+    clientSocket1.off()
+    clientSocket1.disconnect()
+    clientSocket2.off()
+    clientSocket2.disconnect()
   })
 })
