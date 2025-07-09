@@ -17,10 +17,15 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
 
   setup(controllers: Controller[]): void {
     this.server.on('connection', (socket) => {
-      console.log('[Socket.IO] User connected', socket.id)
+      console.log(
+        new Date().toISOString(),
+        '[Socket.IO] User connected',
+        socket.id
+      )
 
       socket.on('disconnect', (e) => {
         console.log(
+          new Date().toISOString(),
           '[Socket.IO] User disconnected',
           socket.id,
           `| Reason: ${e}`
@@ -28,7 +33,10 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
       })
 
       socket.use(([event], next) => {
-        console.log(`[Socket.IO] Event: ${event} | ${socket.id}`)
+        console.log(
+          new Date().toISOString(),
+          `[Socket.IO] Event: ${event} | ${socket.id}`
+        )
         next()
       })
 
@@ -38,7 +46,12 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
 
       controllers.forEach((controller) =>
         socket.on(controller.path, async (payload) => {
-          console.log('[Socket.IO] Controller', controller.path, payload)
+          console.log(
+            new Date().toISOString(),
+            '[Socket.IO] Controller',
+            controller.path,
+            payload
+          )
           await controller.handle(JSON.parse(payload))
         })
       )
@@ -47,6 +60,7 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
 
   toUser(userId: string, { name, payload }: AppEvent<unknown>): void {
     console.log(
+      new Date().toISOString(),
       `[Socket.IO] Emitting event: ${name} : ${payload} : to ${userId}`
     )
     this.server.to(userId).emit(name, payload)
