@@ -3,10 +3,11 @@ export interface SocketEmitter<T = unknown> {
 }
 
 export interface AppEvent<T = unknown> {
-  name: DispatchEvent
+  name: string
   payload: T
 }
 
+// Remove this?
 export type DispatchEvent =
   | 'global:amount'
   | 'monitoringItemComment:notifications'
