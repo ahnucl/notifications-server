@@ -2,6 +2,11 @@
 import { NotificationRepository } from '@/domain/application/repositories/notification-repository'
 import { Notification } from '@/domain/entities/notification'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
+import type { SearchReply } from 'redis'
+import {
+  RedisNotification,
+  RedisNotificationMapper,
+} from '../mappers/redis-notification-mapper'
 import { AppRedisClient } from '../redis.service'
 
 export class RedisNotificationRepository implements NotificationRepository {
@@ -9,24 +14,53 @@ export class RedisNotificationRepository implements NotificationRepository {
     this.client.connect()
   }
 
+  async create(notification: Notification): Promise<void> {
+    const key = `notification:${notification.id.value}`
+    const redisNotification = RedisNotificationMapper.toRedis(notification)
+    await this.client.json.set(key, '$', redisNotification)
+  }
+
   findManyByUserId(idUser: string): Promise<Notification[]> {
     throw new Error('Method not implemented.')
   }
-  getUsersUnreadAmount(idUser: string): Promise<number> {
-    throw new Error('Method not implemented.')
+
+  async getUsersUnreadAmount(idUser: string): Promise<number> {
+    const raw = (await this.client.ft.search(
+      'idx:notifications',
+      `${idUser} @readAt:"_null"`
+    )) as SearchReply | null
+
+    if (!raw) {
+      return 0
+    }
+
+    return raw.total
   }
-  findManyUnreadByType(
+
+  async findManyUnreadByType(
     idUser: string,
     type: MetadataType
   ): Promise<Notification[]> {
-    throw new Error('Method not implemented.')
+    const raw = (await this.client.ft.search(
+      'idx:notifications',
+      `${idUser} @type:"${type}" @readAt:"_null"`
+    )) as SearchReply | null
+
+    if (!raw) {
+      return []
+    }
+
+    const notificataions = raw.documents.map(({ value }) =>
+      RedisNotificationMapper.toDomain(value as RedisNotification)
+    )
+
+    return notificataions
   }
+
   findById(id: string): Promise<Notification | null> {
     throw new Error('Method not implemented.')
   }
-  create(notification: Notification): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
+
   save(notification: Notification): Promise<void> {
     throw new Error('Method not implemented.')
   }
