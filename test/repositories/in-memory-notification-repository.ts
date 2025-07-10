@@ -26,7 +26,7 @@ export class InMemoryNotificationRepository extends NotificationRepository {
     return this.notifications.filter(
       (notification) =>
         notification.recipientId === idUser &&
-        notification.getType() === type &&
+        notification.type === type &&
         !notification.readAt
     )
   }

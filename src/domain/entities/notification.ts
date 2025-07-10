@@ -43,11 +43,18 @@ export class Notification {
     return this.metadata.auxiliarField?.value
   }
 
-  public read() {
-    this._readAt = new Date()
+  get type() {
+    return this.metadata.type
   }
 
-  public getType() {
-    return this.metadata.type
+  get sourceData() {
+    return {
+      name: this.metadata.name,
+      primaryKey: this.metadata.primaryKey.name,
+      auxiliarField: this.metadata.auxiliarField?.name,
+    }
+  }
+  public read() {
+    this._readAt = new Date()
   }
 }

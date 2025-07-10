@@ -60,7 +60,7 @@ describe("Fetch user's notification by metadata type", () => {
 
     expect(type).toBe('none')
     expect(unreadNotifications).toHaveLength(1)
-    expect(unreadNotifications[0].getType()).toEqual('none')
+    expect(unreadNotifications[0].type).toEqual('none')
     expect(unreadNotifications[0].recipientId).toBe('400400')
     expect(inMemoryNotificationRepository.notifications).toHaveLength(3)
   })

@@ -28,7 +28,7 @@ describe('Create notification', () => {
 
     expect(newNotification).not.toBeNull()
 
-    const createNotificationMetadataType = newNotification!.getType()
+    const createNotificationMetadataType = newNotification!.type
 
     expect(createNotificationMetadataType).toBe('none')
   })
