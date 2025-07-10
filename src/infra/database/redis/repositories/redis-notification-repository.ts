@@ -57,11 +57,21 @@ export class RedisNotificationRepository implements NotificationRepository {
     return notificataions
   }
 
-  findById(id: string): Promise<Notification | null> {
-    throw new Error('Method not implemented.')
+  async findById(id: string): Promise<Notification | null> {
+    const raw = (await this.client.json.get(
+      `notification:${id}`
+    )) as RedisNotification | null
+
+    if (!raw) {
+      return null
+    }
+
+    return RedisNotificationMapper.toDomain(raw)
   }
 
-  save(notification: Notification): Promise<void> {
-    throw new Error('Method not implemented.')
+  async save(notification: Notification): Promise<void> {
+    const key = `notification:${notification.id.value}`
+    const redisNotification = RedisNotificationMapper.toRedis(notification)
+    await this.client.json.set(key, '$', redisNotification)
   }
 }
