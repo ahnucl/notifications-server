@@ -9,14 +9,14 @@ interface RetrieveUserNotificationAmountPayload {
 export class RetrieveUserNotificationAmount extends Controller {
   constructor(
     emitter: SocketEmitter,
-    private fetchUserUnreadNotificationUnreadAmount: FetchUserUnreadNotificationAmountUseCase
+    private fetchUserUnreadNotificationAmount: FetchUserUnreadNotificationAmountUseCase
   ) {
     const path = 'user-notification:amount'
     super({ path, emitter })
   }
   async handle({ recipientId }: RetrieveUserNotificationAmountPayload) {
     const [notificationAmount, error] =
-      await this.fetchUserUnreadNotificationUnreadAmount.execute({
+      await this.fetchUserUnreadNotificationAmount.execute({
         recipientId,
       })
 
