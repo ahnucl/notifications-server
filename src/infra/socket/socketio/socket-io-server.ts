@@ -52,7 +52,7 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
             controller.path,
             payload
           )
-          await controller.handle(JSON.parse(payload))
+          await controller.handle(payload)
         })
       )
     })
@@ -61,7 +61,9 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
   toUser(userId: string, { name, payload }: AppEvent<unknown>): void {
     console.log(
       new Date().toISOString(),
-      `[Socket.IO] Emitting event: ${name} : ${payload} : to ${userId}`
+      `[Socket.IO] Emitting event: ${name} : `,
+      payload,
+      `: to ${userId}`
     )
     this.server.to(userId).emit(name, payload)
   }
