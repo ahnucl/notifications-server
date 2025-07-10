@@ -54,6 +54,7 @@ create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
   1.3 Erros
 
 # TODOs
-[] Log sem console.log
+[] Log sem console.log - pino com níveis de log
 [] Melhorar tratamento de erros
 [] Revisar testes
+[] Melhorar autenticação/autorização
