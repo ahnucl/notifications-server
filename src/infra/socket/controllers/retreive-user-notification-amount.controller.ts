@@ -6,7 +6,7 @@ interface RetrieveUserNotificationAmountPayload {
   recipientId: string
 }
 
-export class RetrieveUserNotificationAmount extends Controller {
+export class RetrieveUserNotificationAmountController extends Controller {
   constructor(
     emitter: SocketEmitter,
     private fetchUserUnreadNotificationAmount: FetchUserUnreadNotificationAmountUseCase

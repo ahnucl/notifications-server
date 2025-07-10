@@ -8,12 +8,12 @@ import { httpServer } from '@/infra/http/server'
 import { AddressInfo } from 'node:net'
 import { io as Client } from 'socket.io-client'
 import { SocketIOServer } from '../socketio/socket-io-server'
-import { RetrieveUserNotificationAmount } from './retreive-user-notification-amount.controller'
+import { RetrieveUserNotificationAmountController } from './retreive-user-notification-amount.controller'
 import { makeNotification } from 'test/factories/make-notification'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
 
 describe('Retrtrieve user unread notification amount (E2E)', () => {
-  let retrieveUserNotificationAmount: RetrieveUserNotificationAmount
+  let retrieveUserNotificationAmount: RetrieveUserNotificationAmountController
   let socketServerURL: string
   let socketServer: SocketIOServer
   let fetchUserUnreadNotificationAmountUseCase: FetchUserUnreadNotificationAmountUseCase
@@ -35,10 +35,11 @@ describe('Retrtrieve user unread notification amount (E2E)', () => {
     fetchUserUnreadNotificationAmountUseCase =
       new FetchUserUnreadNotificationAmountUseCase(notificationsRepository)
 
-    retrieveUserNotificationAmount = new RetrieveUserNotificationAmount(
-      socketServer,
-      fetchUserUnreadNotificationAmountUseCase
-    )
+    retrieveUserNotificationAmount =
+      new RetrieveUserNotificationAmountController(
+        socketServer,
+        fetchUserUnreadNotificationAmountUseCase
+      )
 
     // App start
     socketServer.setup([retrieveUserNotificationAmount])

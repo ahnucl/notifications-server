@@ -8,7 +8,7 @@ interface ReadNotificationPayload {
   notificationId: string
 }
 
-export class ReadNotification extends Controller {
+export class ReadNotificationController extends Controller {
   constructor(
     emitter: SocketEmitter,
     private readNotification: ReadNotificationUseCase,
