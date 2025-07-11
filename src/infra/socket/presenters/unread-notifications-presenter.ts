@@ -3,7 +3,7 @@ import { Notification } from '@/domain/entities/notification'
 export class UnreadNotificationsPresenter {
   static toSocket(notificataion: Notification) {
     return {
-      id: notificataion.id,
+      id: notificataion.id.value,
       recipientId: notificataion.recipientId,
       type: notificataion.type,
       primaryKey: notificataion.primaryId,
