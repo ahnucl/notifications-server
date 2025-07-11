@@ -58,3 +58,8 @@ create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
 [] Melhorar tratamento de erros
 [] Revisar testes
 [] Melhorar autenticação/autorização
+
+# Etapas finais
+✅ Dockerfile
+✅ Docker compose produção
+[] Integração manager
