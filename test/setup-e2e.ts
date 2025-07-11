@@ -1,16 +1,27 @@
 import { config } from 'dotenv'
-// import { execSync } from 'node:child_process'
+import { execSync } from 'node:child_process'
 
-config({ path: '.env', override: true })
+// config({ path: '.env', override: true })
 config({ path: '.env.test', override: true })
 
 beforeEach(() => {
-  // const containerName = execSync(
-  //   'docker run --rm -p 6380:6379 -d redis:8.0.2-bookworm'
-  // )
-  //   .toString()
-  //   .trim()
-  // return () => {
-  //   execSync(`docker stop ${containerName}`)
-  // }
+  const containerName = execSync(
+    'docker run --rm -p :6379 -d redis:8.0.2-bookworm'
+  )
+    .toString()
+    .trim()
+
+  const portOutput = execSync(`docker port ${containerName} 6379/tcp`)
+    .toString()
+    .trim()
+
+  const hostPort = portOutput.split(':').pop()
+
+  console.log('hostPort', hostPort)
+
+  process.env.REDIS_PORT = hostPort
+
+  return () => {
+    execSync(`docker stop ${containerName}`)
+  }
 })
