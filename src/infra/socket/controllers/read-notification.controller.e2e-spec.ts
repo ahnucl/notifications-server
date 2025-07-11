@@ -1,30 +1,30 @@
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
 import { ReadNotificationUseCase } from '@/domain/application/use-cases/read-notification'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
-import {
-  createIndex,
-  client as redisClient,
-} from '@/infra/database/redis/redis.service'
+import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { AddressInfo } from 'node:net'
+import { RedisClientType } from 'redis'
 import { io as Client } from 'socket.io-client'
 import { makeNotification } from 'test/factories/make-notification'
 import { SocketIOServer } from '../socketio/socket-io-server'
 import { ReadNotificationController } from './read-notification.controller'
 
-describe('Create a Monitoring Item Comment notification (E2E)', () => {
+describe('Read a notification (E2E)', () => {
   let readNotificationController: ReadNotificationController
   let socketServerURL: string
   let socketServer: SocketIOServer
   let readNotificationUseCase: ReadNotificationUseCase
   let fetchUserUnreadNotificationAmountUseCase: FetchUserUnreadNotificationAmountUseCase
   let notificationsRepository: RedisNotificationRepository
+  let redis: RedisClientType
 
   beforeAll(async () => {
-    redisClient.connect()
-    await createIndex()
-    redisClient.close()
+    redis = makeClient()
+    await redis.connect()
+    await createIndex(redis)
+    await redis.close()
   })
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
-    notificationsRepository = new RedisNotificationRepository(redisClient)
+    notificationsRepository = new RedisNotificationRepository(redis)
 
     readNotificationUseCase = new ReadNotificationUseCase(
       notificationsRepository
@@ -63,12 +63,12 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
     const secondNotification = makeNotification()
 
     await Promise.all([
-      redisClient.json.set(
+      redis.json.set(
         `notification:${firstNotification.id.value}`,
         '$',
         RedisNotificationMapper.toRedis(firstNotification)
       ),
-      redisClient.json.set(
+      redis.json.set(
         `notification:${secondNotification.id.value}`,
         '$',
         RedisNotificationMapper.toRedis(secondNotification)

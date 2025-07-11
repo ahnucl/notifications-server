@@ -2,15 +2,12 @@ import { CreateNotificationUseCase } from '@/domain/application/use-cases/create
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
 import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
 import { Notification } from '@/domain/entities/notification'
-import {
-  createIndex,
-  client as redisClient,
-} from '@/infra/database/redis/redis.service'
+import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
 import { AddressInfo } from 'node:net'
-import { SearchReply } from 'redis'
+import { RedisClientType, SearchReply } from 'redis'
 import { io as Client } from 'socket.io-client'
 import { SocketIOServer } from '../socketio/socket-io-server'
 import { CreateMonitoringItemCommentNotificationController } from './create-monitoring-item-comment-notification.controller'
@@ -24,11 +21,13 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
   let fetchUserUnreadNotificationsByTypeUseCase: FetchUserUnreadNotificationsByTypeUseCase
   let metadataFactory: MonitoringItemCommentMetadataFactory
   let notificationsRepository: RedisNotificationRepository
+  let redis: RedisClientType
 
   beforeAll(async () => {
-    redisClient.connect()
-    await createIndex()
-    redisClient.close()
+    redis = makeClient()
+    await redis.connect()
+    await createIndex(redis)
+    await redis.close()
   })
 
   beforeEach(() => {
@@ -37,7 +36,7 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
 
     // App Setup
     metadataFactory = new MonitoringItemCommentMetadataFactory()
-    notificationsRepository = new RedisNotificationRepository(redisClient)
+    notificationsRepository = new RedisNotificationRepository(redis)
 
     createNotificationUseCase = new CreateNotificationUseCase(
       notificationsRepository,
@@ -122,7 +121,7 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
       monitoringItemCommentNotifications,
     ])
 
-    const userUnreadNotificationsOnDatabase = (await redisClient.ft.search(
+    const userUnreadNotificationsOnDatabase = (await redis.ft.search(
       'idx:notifications',
       '400400 @type:"monitoringItemComment" @readAt:"_null"'
     )) as SearchReply | null
