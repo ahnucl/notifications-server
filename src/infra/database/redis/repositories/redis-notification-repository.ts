@@ -2,15 +2,14 @@
 import { NotificationRepository } from '@/domain/application/repositories/notification-repository'
 import { Notification } from '@/domain/entities/notification'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
-import type { SearchReply } from 'redis'
+import type { RedisClientType, SearchReply } from 'redis'
 import {
   RedisNotification,
   RedisNotificationMapper,
 } from '../mappers/redis-notification-mapper'
-import { AppRedisClient } from '../redis.service'
 
 export class RedisNotificationRepository implements NotificationRepository {
-  constructor(private client: AppRedisClient) {
+  constructor(private client: RedisClientType) {
     this.client.connect()
   }
 
