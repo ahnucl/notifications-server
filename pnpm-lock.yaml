@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  dotenv:
+    specifier: ^17.2.0
+    version: 17.2.0
   redis:
     specifier: ^5.5.6
     version: 5.5.6
   socket.io:
     specifier: ^4.8.1
     version: 4.8.1
+  zod:
+    specifier: ^4.0.4
+    version: 4.0.4
 
 devDependencies:
   '@eslint/js':
@@ -1213,6 +1219,11 @@ packages:
   /deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
     dev: true
+
+  /dotenv@17.2.0:
+    resolution: {integrity: sha512-Q4sgBT60gzd0BB0lSyYD3xM4YxrXA9y4uBDof1JNYGzOXrQdQ6yX+7XIAqoFOGQFOTK1D3Hts5OllpxMDZFONQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -2676,3 +2687,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod@4.0.4:
+    resolution: {integrity: sha512-i+8X+1VC5B3ufKpHJYkp1uACl34n8MA3PNXiayDGmKVqTmiKgqmxSayPQjsYvkGs+DitAMS7U1l4uG6AZYCJGA==}
+    dev: false
