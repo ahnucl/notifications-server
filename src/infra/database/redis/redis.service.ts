@@ -1,14 +1,28 @@
-import { createClient, SCHEMA_FIELD_TYPE } from 'redis'
+import { getEnv } from '@/infra/env/env.service'
+import { createClient, RedisClientType, SCHEMA_FIELD_TYPE } from 'redis'
 
-const client = createClient({
-  socket: {
-    port: 6380, // use .env
-    host: 'localhost',
-  },
-  database: 0,
-})
+export function makeClient() {
+  const env = getEnv()
+  const client = createClient({
+    socket: {
+      port: env.REDIS_PORT,
+      host: env.REDIS_HOST,
+    },
+    database: env.REDIS_DATABASE,
+  })
 
-export async function createIndex() {
+  client.on('error', (error) => {
+    console.error(`Redis client error:`, error)
+  })
+
+  return client as RedisClientType
+}
+
+export async function createIndex(client: RedisClientType) {
+  const existingIndexes = await client.ft._list()
+
+  if (existingIndexes.includes('idx:notifications')) return
+
   await client.ft.create(
     'idx:notifications',
     {
@@ -35,11 +49,3 @@ export async function createIndex() {
     }
   )
 }
-
-client.on('error', (error) => {
-  console.error(`Redis client error:`, error)
-})
-
-export type AppRedisClient = typeof client
-
-export { client }

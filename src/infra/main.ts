@@ -2,6 +2,7 @@
  * For future reference:
  * Add tsyringe if this project grows
  */
+import 'dotenv/config'
 
 import { httpServer } from './http/server'
 import { makeControllers } from './socket/setup'
