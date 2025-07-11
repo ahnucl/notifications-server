@@ -1,6 +1,6 @@
 {
   "name": "web-notifications",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "build": "tsup",
     "dev": "tsx watch src/infra/main",
@@ -11,7 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "vitest run --config ./vitest.config.e2e.mts",
     "test:e2e:watch": "vitest --config ./vitest.config.e2e.mts",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "docker:build": "docker build -t comunixtecnologia/web-notifications:0.0.1 ."
   },
   "keywords": [],
   "author": "",

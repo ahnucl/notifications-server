@@ -1,0 +1,17 @@
+Dockerfile
+docker-compose*
+.dockerignore
+.git
+.gitignore
+
+.editorconfig
+.env*
+.prettier*
+eslint.config.mjs
+README.md
+
+docs
+dist
+data
+coverage
+test
