@@ -1,28 +1,28 @@
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
-import {
-  createIndex,
-  client as redisClient,
-} from '@/infra/database/redis/redis.service'
+import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
+import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { AddressInfo } from 'node:net'
+import { RedisClientType } from 'redis'
 import { io as Client } from 'socket.io-client'
-import { SocketIOServer } from '../socketio/socket-io-server'
-import { RetrieveUserNotificationAmountController } from './retreive-user-notification-amount.controller'
 import { makeNotification } from 'test/factories/make-notification'
-import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
+import { SocketIOServer } from '../socketio/socket-io-server'
+import { RetrieveUserNotificationAmountController } from './retrieve-user-notification-amount.controller'
 
-describe('Retrtrieve user unread notification amount (E2E)', () => {
+describe('Retrieve user unread notification amount (E2E)', () => {
   let retrieveUserNotificationAmount: RetrieveUserNotificationAmountController
   let socketServerURL: string
   let socketServer: SocketIOServer
   let fetchUserUnreadNotificationAmountUseCase: FetchUserUnreadNotificationAmountUseCase
   let notificationsRepository: RedisNotificationRepository
+  let redis: RedisClientType
 
   beforeAll(async () => {
-    redisClient.connect()
-    await createIndex()
-    redisClient.close()
+    redis = makeClient()
+    await redis.connect()
+    await createIndex(redis)
+    await redis.close()
   })
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('Retrtrieve user unread notification amount (E2E)', () => {
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
-    notificationsRepository = new RedisNotificationRepository(redisClient)
+    notificationsRepository = new RedisNotificationRepository(redis)
 
     fetchUserUnreadNotificationAmountUseCase =
       new FetchUserUnreadNotificationAmountUseCase(notificationsRepository)
@@ -60,17 +60,17 @@ describe('Retrtrieve user unread notification amount (E2E)', () => {
       recipientId: '500500',
     })
 
-    await redisClient.json.set(
+    await redis.json.set(
       `notification:${firstUserUnreadNotification.id.value}`,
       '$',
       RedisNotificationMapper.toRedis(firstUserUnreadNotification)
     )
-    await redisClient.json.set(
+    await redis.json.set(
       `notification:${firstUserReadNotification.id.value}`,
       '$',
       RedisNotificationMapper.toRedis(firstUserReadNotification)
     )
-    await redisClient.json.set(
+    await redis.json.set(
       `notification:${secondUserUnreadNotification.id.value}`,
       '$',
       RedisNotificationMapper.toRedis(secondUserUnreadNotification)
