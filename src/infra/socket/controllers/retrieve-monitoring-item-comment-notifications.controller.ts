@@ -1,6 +1,7 @@
 import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
 import { Controller } from '../controller'
 import { SocketEmitter } from '../emitter'
+import { UnreadNotificationsPresenter } from '../presenters/unread-notifications-presenter'
 
 interface RetrieveMonitoringItemCommentNotificationsPayload {
   recipientId: string
@@ -27,7 +28,9 @@ export class RetrieveMonitoringItemCommentNotificationsController extends Contro
 
     this.emitter.toUser(recipientId, {
       name: 'monitoringItemComment:notifications',
-      payload: notifications.unreadNotifications,
+      payload: notifications.unreadNotifications.map(
+        UnreadNotificationsPresenter.toSocket
+      ),
     })
   }
 }
