@@ -1,6 +1,6 @@
 services:
   app:
-    image: comunixtecnologia/web-notifications:0.0.1
+    image: comunixtecnologia/web-notifications:0.0.2
     container_name: web-notifications-server
     environment:
       - REDIS_HOST=database

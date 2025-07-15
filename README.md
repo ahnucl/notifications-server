@@ -63,3 +63,13 @@ create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
 ✅ Dockerfile
 ✅ Docker compose produção
 [] Integração manager
+
+# Setup REDIS
+É necessário criar o índice para buscas JSON no redis.
+```bash
+redis-cli FT.CREATE idx:notifications ON JSON PREFIX 1 notification: SCHEMA \
+  $.id AS id TEXT \
+  $.recipientId AS recipientId TEXT \
+  $.metadata.type AS type TEXT \
+  $.readAt AS readAt TEXT
+```
