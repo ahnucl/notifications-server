@@ -23,6 +23,14 @@ export class SocketIOServer extends SocketServer implements SocketEmitter {
         socket.id
       )
 
+      if (socket.handshake.query.user) {
+        console.log(
+          new Date().toISOString(),
+          `[Socket.IO] Created room for user ${socket.handshake.query.user}`
+        )
+        socket.join(socket.handshake.query.user)
+      }
+
       socket.on('disconnect', (e) => {
         console.log(
           new Date().toISOString(),
