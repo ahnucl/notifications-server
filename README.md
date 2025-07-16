@@ -53,16 +53,10 @@ create / read -> Emitir 2 eventos: atualizar notificações totais e do recurso
   1.2 Middlewares
   1.3 Erros
 
-# TODOs
-[] Log sem console.log - pino com níveis de log
-[] Melhorar tratamento de erros
-[] Revisar testes
-[] Melhorar autenticação/autorização
-
 # Etapas finais
 ✅ Dockerfile
 ✅ Docker compose produção
-[] Integração manager
+✅ Integração manager
 
 # Setup REDIS
 É necessário criar o índice para buscas JSON no redis.
@@ -73,3 +67,16 @@ redis-cli FT.CREATE idx:notifications ON JSON PREFIX 1 notification: SCHEMA \
   $.metadata.type AS type TEXT \
   $.readAt AS readAt TEXT
 ```
+
+# Contextos
+
+## Quality\Monitoria
+1. Quando a monitoria é liberada para feedback a notificação deve ser criada se ela existir (até o momento apenas uma pode existir)
+2. É possível adicionar novas mensagens na visualização de monitoria liberada para feedback
+
+# Dívida técnica
+
+[] Na leitura de uma notificação, deveria ser possível pegar o tipo da notificação, buscar notificações não lidas do tipo também para envio
+[] Conexão mais rígida - exigir autenticação
+[] Tratamento de erros e validação de dados
+[] Log e Tracing
