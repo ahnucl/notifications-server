@@ -76,7 +76,14 @@ redis-cli FT.CREATE idx:notifications ON JSON PREFIX 1 notification: SCHEMA \
 
 # Dívida técnica
 
-[] Na leitura de uma notificação, deveria ser possível pegar o tipo da notificação, buscar notificações não lidas do tipo também para envio
+✅ Na leitura de uma notificação, deveria ser possível pegar o tipo da notificação, buscar notificações não lidas do tipo também para envio
+  - Implica alterar índices no redis -> Verificar viabilidade
+  - No momento resolve criar um caso de uso mais específico (por tipo de notificação) e remover o genérico
+  - OU retornar todas as notificações não lidas do usuário agregadas por tipo, por exemplo
+  - *Resolvido permitindo escolher a factory em runtime -> pode ser útil no futuro para não precisar criar novos controllers*
+[] Trocar persistência por mongoDB
+  - Acho que não será necessário, Redis é bem rápido e está funcionando. Só os testes que estão chatos de configurar
+[] Corrigir teste E2E Redis -> É possível executar apenas um por vez
 [] Conexão mais rígida - exigir autenticação
 [] Tratamento de erros e validação de dados
 [] Log e Tracing
