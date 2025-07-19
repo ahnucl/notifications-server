@@ -10,6 +10,12 @@ import { io as Client } from 'socket.io-client'
 import { makeNotification } from 'test/factories/make-notification'
 import { SocketIOServer } from '../socketio/socket-io-server'
 import { ReadNotificationController } from './read-notification.controller'
+import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
+import { MetadataFactoryRegistry } from '@/infra/metadata/registry'
+import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
+import { TestMetadataFactory } from 'test/metadata/testing-metadata-factory'
+import { Notification } from '@/domain/entities/notification'
+import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 
 describe('Read a notification (E2E)', () => {
   let readNotificationController: ReadNotificationController
@@ -17,8 +23,11 @@ describe('Read a notification (E2E)', () => {
   let socketServer: SocketIOServer
   let readNotificationUseCase: ReadNotificationUseCase
   let fetchUserUnreadNotificationAmountUseCase: FetchUserUnreadNotificationAmountUseCase
+  let fetchUserUnreadNotificationsByTypeUseCase: FetchUserUnreadNotificationsByTypeUseCase
+  let metadataFactoryRegistry: MetadataFactoryRegistry
   let notificationsRepository: RedisNotificationRepository
   let redis: RedisClientType
+  let metadataFactory: MetadataFactory
 
   beforeAll(async () => {
     redis = makeClient()
@@ -32,18 +41,30 @@ describe('Read a notification (E2E)', () => {
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
+    metadataFactory = new MonitoringItemCommentMetadataFactory()
+
     notificationsRepository = new RedisNotificationRepository(redis)
+    metadataFactoryRegistry = new MetadataFactoryRegistry({
+      monitoringItemComment: new MonitoringItemCommentMetadataFactory(),
+      none: new TestMetadataFactory(),
+    })
 
     readNotificationUseCase = new ReadNotificationUseCase(
       notificationsRepository
     )
     fetchUserUnreadNotificationAmountUseCase =
       new FetchUserUnreadNotificationAmountUseCase(notificationsRepository)
-
+    fetchUserUnreadNotificationsByTypeUseCase =
+      new FetchUserUnreadNotificationsByTypeUseCase(
+        notificationsRepository,
+        null
+      )
     readNotificationController = new ReadNotificationController(
       socketServer,
       readNotificationUseCase,
-      fetchUserUnreadNotificationAmountUseCase
+      fetchUserUnreadNotificationAmountUseCase,
+      fetchUserUnreadNotificationsByTypeUseCase,
+      metadataFactoryRegistry
     )
 
     // App start
@@ -61,6 +82,12 @@ describe('Read a notification (E2E)', () => {
   test('[user-notification:read]', async () => {
     const firstNotification = makeNotification()
     const secondNotification = makeNotification()
+    const thirdNotification = makeNotification({
+      metadata: metadataFactory.produce({
+        primaryKeyValue: 1,
+        auxiliarFieldValue: 0,
+      }),
+    })
 
     await Promise.all([
       redis.json.set(
@@ -72,6 +99,11 @@ describe('Read a notification (E2E)', () => {
         `notification:${secondNotification.id.value}`,
         '$',
         RedisNotificationMapper.toRedis(secondNotification)
+      ),
+      redis.json.set(
+        `notification:${thirdNotification.id.value}`,
+        '$',
+        RedisNotificationMapper.toRedis(thirdNotification)
       ),
     ])
 
@@ -96,13 +128,58 @@ describe('Read a notification (E2E)', () => {
       }
     )
 
+    const unreadNotificationsOfTypeNone = new Promise<Notification[]>(
+      (resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(
+            new Error(
+              '[TEST] Test timeout: No none:notifications event received'
+            )
+          )
+        }, 100)
+
+        clientSocket.once('none:notifications', (payload) => {
+          clearTimeout(timeout)
+          resolve(payload)
+        })
+      }
+    )
+
+    const unreadNotificationsOfOtherType = new Promise<Error>(
+      (resolve, reject) => {
+        const timeout = setTimeout(() => {
+          resolve(
+            new Error(
+              '[TEST] Test timeout: No monitoringItemComment:notifications event received'
+            )
+          )
+        }, 100)
+
+        clientSocket.once('monitoringItemComment:notifications', (payload) => {
+          clearTimeout(timeout)
+          reject(payload)
+        })
+      }
+    )
+
     clientSocket.emit('user-notification:read', {
       recipientId: '400400',
       notificationId: secondNotification.id.value,
     })
 
-    const { unreadAmount } = await globalAmount
+    const [
+      { unreadAmount },
+      notificationsOfTypeNone,
+      notificationsOfOtherType,
+    ] = await Promise.all([
+      globalAmount,
+      unreadNotificationsOfTypeNone,
+      unreadNotificationsOfOtherType,
+    ])
 
-    expect(unreadAmount).toEqual(1)
+    expect(unreadAmount).toEqual(2) // One of type none, one of type monitoringItemComment
+    expect(notificationsOfTypeNone).toHaveLength(1)
+    expect(notificationsOfTypeNone[0].id).toBe(firstNotification.id.value)
+    expect(notificationsOfOtherType).toBeInstanceOf(Error)
   })
 })

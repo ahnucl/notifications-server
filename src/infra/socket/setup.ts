@@ -8,5 +8,5 @@ const services = setupServices()
 const useCases = setupUseCases(services)
 
 export function makeControllers(emitter: SocketEmitter) {
-  return setupControllers(useCases, emitter)
+  return setupControllers(useCases, emitter, services)
 }

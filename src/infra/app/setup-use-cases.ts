@@ -12,6 +12,8 @@ export function setupUseCases({
   const readNotification = new ReadNotificationUseCase(repository)
   const fetchUserUnreadNotificationAmount =
     new FetchUserUnreadNotificationAmountUseCase(repository)
+  const fetchUserUnreadNotifications =
+    new FetchUserUnreadNotificationsByTypeUseCase(repository, null)
 
   // Monitoring Item Comment Use Cases
   const createMonitoringItemCommentNotification = new CreateNotificationUseCase(
@@ -29,6 +31,7 @@ export function setupUseCases({
     shared: {
       readNotification,
       fetchUserUnreadNotificationAmount,
+      fetchUserUnreadNotifications,
     },
     monitoringItemComments: {
       createMonitoringItemCommentNotification,

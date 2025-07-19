@@ -4,16 +4,23 @@ import { ReadNotificationController } from '../socket/controllers/read-notificat
 import { RetrieveUserNotificationAmountController } from '../socket/controllers/retrieve-user-notification-amount.controller'
 import { RetrieveMonitoringItemCommentNotificationsController } from '../socket/controllers/retrieve-monitoring-item-comment-notifications.controller'
 import { SocketEmitter } from '../socket/emitter'
-import { AppUseCases } from './interfaces'
+import { AppServices, AppUseCases } from './interfaces'
 
 export function setupControllers(
   { shared, monitoringItemComments }: AppUseCases,
-  emitter: SocketEmitter
+  emitter: SocketEmitter,
+  services: AppServices
 ): Controller[] {
   const controllers = [
     new ReadNotificationController(
       emitter,
       shared.readNotification,
+      shared.fetchUserUnreadNotificationAmount,
+      shared.fetchUserUnreadNotifications,
+      services.metadataRegistry
+    ),
+    new RetrieveUserNotificationAmountController(
+      emitter,
       shared.fetchUserUnreadNotificationAmount
     ),
     new CreateMonitoringItemCommentNotificationController(
@@ -21,10 +28,6 @@ export function setupControllers(
       monitoringItemComments.createMonitoringItemCommentNotification,
       shared.fetchUserUnreadNotificationAmount,
       monitoringItemComments.fetchUserUnreadMonitoringItemCommentNotifications
-    ),
-    new RetrieveUserNotificationAmountController(
-      emitter,
-      shared.fetchUserUnreadNotificationAmount
     ),
     new RetrieveMonitoringItemCommentNotificationsController(
       emitter,
