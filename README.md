@@ -87,4 +87,4 @@ redis-cli FT.CREATE idx:notifications ON JSON PREFIX 1 notification: SCHEMA \
 [] Conexão mais rígida - exigir autenticação
 [] Tratamento de erros e validação de dados
 [] Log e Tracing
-[] Repositórios remotos
+✅ Repositórios remotos
