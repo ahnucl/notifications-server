@@ -1,21 +1,21 @@
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
+import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
 import { ReadNotificationUseCase } from '@/domain/application/use-cases/read-notification'
+import { Notification } from '@/domain/entities/notification'
+import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
 import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
+import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
+import { MetadataFactoryRegistry } from '@/infra/metadata/registry'
 import { AddressInfo } from 'node:net'
 import { RedisClientType } from 'redis'
 import { io as Client } from 'socket.io-client'
 import { makeNotification } from 'test/factories/make-notification'
+import { TestMetadataFactory } from 'test/metadata/testing-metadata-factory'
 import { SocketIOServer } from '../socketio/socket-io-server'
 import { ReadNotificationController } from './read-notification.controller'
-import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
-import { MetadataFactoryRegistry } from '@/infra/metadata/registry'
-import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
-import { TestMetadataFactory } from 'test/metadata/testing-metadata-factory'
-import { Notification } from '@/domain/entities/notification'
-import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 
 describe('Read a notification (E2E)', () => {
   let readNotificationController: ReadNotificationController
@@ -29,14 +29,24 @@ describe('Read a notification (E2E)', () => {
   let redis: RedisClientType
   let metadataFactory: MetadataFactory
 
-  beforeAll(async () => {
+  // beforeAll(async () => {
+  //   redis = makeClient()
+  //   await redis.connect()
+  //   await createIndex(redis)
+  //   await redis.close()
+  // })
+
+  beforeEach(async () => {
     redis = makeClient()
     await redis.connect()
     await createIndex(redis)
     await redis.close()
-  })
 
-  beforeEach(() => {
+    // const env = getEnv()
+    // console.log('env', env)
+    // console.log('process.env.REDIS_PORT', process.env.REDIS_PORT)
+    // return 0
+
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 

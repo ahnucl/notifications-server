@@ -21,14 +21,12 @@ describe('Retrieve user Monitoring Item Comment notifications (E2E)', () => {
   let notificationsRepository: RedisNotificationRepository
   let redis: RedisClientType
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     redis = makeClient()
     await redis.connect()
     await createIndex(redis)
     await redis.close()
-  })
 
-  beforeEach(() => {
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 
