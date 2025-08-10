@@ -1,7 +1,7 @@
 import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
 import { MetadataType } from '@/domain/value-objects/metadata/metadata-types'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
-import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
+import { makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
@@ -22,15 +22,12 @@ describe('Retrieve user Monitoring Item Comment notifications (E2E)', () => {
   let redis: RedisClientType
 
   beforeEach(async () => {
-    redis = makeClient()
-    await redis.connect()
-    await createIndex(redis)
-    await redis.close()
-
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
+    redis = makeClient()
+
     metadataFactory = new MonitoringItemCommentMetadataFactory()
     notificationsRepository = new RedisNotificationRepository(redis)
 

@@ -1,6 +1,6 @@
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
-import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
+import { makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { AddressInfo } from 'node:net'
@@ -19,15 +19,12 @@ describe('Retrieve user unread notification amount (E2E)', () => {
   let redis: RedisClientType
 
   beforeEach(async () => {
-    redis = makeClient()
-    await redis.connect()
-    await createIndex(redis)
-    await redis.close()
-
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
+    redis = makeClient()
+
     notificationsRepository = new RedisNotificationRepository(redis)
 
     fetchUserUnreadNotificationAmountUseCase =

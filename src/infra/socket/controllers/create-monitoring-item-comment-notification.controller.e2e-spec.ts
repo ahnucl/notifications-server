@@ -2,7 +2,7 @@ import { CreateNotificationUseCase } from '@/domain/application/use-cases/create
 import { FetchUserUnreadNotificationAmountUseCase } from '@/domain/application/use-cases/fetch-user-unread-notification-amount'
 import { FetchUserUnreadNotificationsByTypeUseCase } from '@/domain/application/use-cases/fetch-user-unread-notifications-by-type'
 import { Notification } from '@/domain/entities/notification'
-import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
+import { makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
@@ -24,15 +24,11 @@ describe('Create a Monitoring Item Comment notification (E2E)', () => {
   let redis: RedisClientType
 
   beforeEach(async () => {
-    redis = makeClient()
-    await redis.connect()
-    await createIndex(redis)
-    await redis.close()
-
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
+    redis = makeClient()
     metadataFactory = new MonitoringItemCommentMetadataFactory()
     notificationsRepository = new RedisNotificationRepository(redis)
 

@@ -4,7 +4,7 @@ import { ReadNotificationUseCase } from '@/domain/application/use-cases/read-not
 import { Notification } from '@/domain/entities/notification'
 import { MetadataFactory } from '@/domain/value-objects/metadata/metadata-factory'
 import { RedisNotificationMapper } from '@/infra/database/redis/mappers/redis-notification-mapper'
-import { createIndex, makeClient } from '@/infra/database/redis/redis.service'
+import { makeClient } from '@/infra/database/redis/redis.service'
 import { RedisNotificationRepository } from '@/infra/database/redis/repositories/redis-notification-repository'
 import { httpServer } from '@/infra/http/server'
 import { MonitoringItemCommentMetadataFactory } from '@/infra/metadata/monitoring-item-comment-metadata-factory'
@@ -29,28 +29,12 @@ describe('Read a notification (E2E)', () => {
   let redis: RedisClientType
   let metadataFactory: MetadataFactory
 
-  // beforeAll(async () => {
-  //   redis = makeClient()
-  //   await redis.connect()
-  //   await createIndex(redis)
-  //   await redis.close()
-  // })
-
   beforeEach(async () => {
-    redis = makeClient()
-    await redis.connect()
-    await createIndex(redis)
-    await redis.close()
-
-    // const env = getEnv()
-    // console.log('env', env)
-    // console.log('process.env.REDIS_PORT', process.env.REDIS_PORT)
-    // return 0
-
     // Server setup
     socketServer = new SocketIOServer(httpServer)
 
     // App Setup
+    redis = makeClient()
     metadataFactory = new MonitoringItemCommentMetadataFactory()
 
     notificationsRepository = new RedisNotificationRepository(redis)
